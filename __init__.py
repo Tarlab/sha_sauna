@@ -66,11 +66,14 @@ while True:
     else:
         if r.status_code == 200:
             gc.collect()
-            temperature = int(float(r.text))
-            r.close()
-
+            try:
+            	temperature = int(float(r.text))
+            	r.close()
+            except:
+            	time.sleep(31)
             show_temp(temperature)
-            time.sleep(15)
+            time.sleep(60)
             continue
+            
     wait_sauna()
-    time.sleep(1)
+    time.sleep(31)
