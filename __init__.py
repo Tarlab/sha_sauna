@@ -1,4 +1,3 @@
-import esp
 import gc
 import time
 import urequests
@@ -48,7 +47,6 @@ def show_temp(temperature):
         ugfx.string(70, 75, "Heat is up!", "Roboto_BlackItalic24", ugfx.WHITE)
     else:
         ugfx.string(70, 75, "Good for Finns!", "Roboto_BlackItalic24", ugfx.WHITE)
-        
     ugfx.flush()
 
 
@@ -56,6 +54,7 @@ ugfx.init()
 wifi.init()
 wait_wifi()
 
+temperature = None
 while True:
     try:
         r = urequests.get("http://www.tarlab.fi/sensors/temperature1")
@@ -67,13 +66,17 @@ while True:
         if r.status_code == 200:
             gc.collect()
             try:
-            	temperature = int(float(r.text))
-            	r.close()
-            except:
-            	time.sleep(31)
-            show_temp(temperature)
-            time.sleep(60)
-            continue
-            
+                temp = int(float(r.text))
+            except ValueError:
+                pass
+            else:
+                r.close()
+                if temp != temperature:
+                    temperature = temp
+                    show_temp(temperature)
+                time.sleep(60)
+                continue
+
+    temperature = None
     wait_sauna()
     time.sleep(31)
